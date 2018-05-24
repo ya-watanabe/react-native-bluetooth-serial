@@ -46,6 +46,7 @@ public class RCTBluetoothSerialModule extends ReactContextBaseJavaModule impleme
     // Other stuff
     private static final int REQUEST_ENABLE_BLUETOOTH = 1;
     private static final int REQUEST_PAIR_DEVICE = 2;
+
     // Members
     private BluetoothAdapter mBluetoothAdapter;
     private RCTBluetoothSerialService mBluetoothService;
@@ -326,7 +327,7 @@ public class RCTBluetoothSerialModule extends ReactContextBaseJavaModule impleme
         if (mBluetoothAdapter != null) {
             BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(id);
             if (device != null) {
-                mBluetoothService.connect(device);
+                mBluetoothService.connect(device, true);
             } else {
                 promise.reject(new Exception("Could not connect to " + id));
             }
@@ -476,11 +477,13 @@ public class RCTBluetoothSerialModule extends ReactContextBaseJavaModule impleme
      * @param data Message
      */
     void onData (String data) {
+        Log.d(TAG, "************************************" + data);
         mBuffer.append(data);
-        String completeData = readUntil(this.delimiter);
-        if (completeData != null && completeData.length() > 0) {
+//        String completeData = readUntil(this.delimiter);
+//        Log.d(TAG, "************************************" + completeData);
+        if (data != null && data.length() > 0) {
             WritableMap params = Arguments.createMap();
-            params.putString("data", completeData);
+            params.putString("data", data);
             sendEvent(DEVICE_READ, params);
         }
     }
